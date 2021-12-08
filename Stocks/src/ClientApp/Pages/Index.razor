@@ -1,0 +1,67 @@
+﻿@page "/"
+@using ClientApp.Models
+@using ClientApp.Services
+@using Market.Protos
+@inject Portfolios.Protos.PortfolioService.PortfolioServiceClient _portfolioService;
+@inject MarketService.MarketServiceClient _marketService;
+
+<PageTitle>Index</PageTitle>
+
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <th>Code</th>
+    <th>Name</th>
+    <th>Holding</th>
+    <th>Price</th>
+  </tr>
+  </thead>
+  <tbody>
+  @foreach (var stock in Portfolio.Stocks)
+  {
+    <tr>
+      <td>@stock.Code</td>
+      <td>@stock.Name</td>
+      <td>@stock.QuantityHeld</td>
+      <td>@stock.Price</td>
+    </tr>
+  }
+  </tbody>
+</table>
+
+@code {
+
+  private const string StubId = "179faf1e-7700-4149-944b-091c239d153a";
+
+  private StockTicker _stockTicker;
+
+  public Portfolio Portfolio { get; set; } = Portfolio.Empty;
+  
+  protected override async Task OnInitializedAsync()
+  {
+    _stockTicker = new StockTicker(_marketService);
+    _stockTicker.Tick += StockTickerOnTick;
+    var request = new Portfolios.Protos.GetPortfolioRequest { Id = StubId };
+    var response = await _portfolioService.GetPortfolioAsync(request);
+
+    Portfolio = new Portfolio
+    {
+      Id = Guid.Parse(response.Portfolio.Id),
+      Stocks = response.Portfolio.Stocks.Select(s => new Stock(s.Code, s.Name, s.QuantityHeld)).ToList()
+    };
+
+    foreach (var stock in Portfolio.Stocks)
+    {
+      await _stockTicker.AddAsync(stock.Code);
+    }
+  }
+
+  private async ValueTask StockTickerOnTick(StockTick tick)
+  {
+    var stock = Portfolio.Stocks.FirstOrDefault(s => s.Code == tick.Code);
+    if (stock is null) return;
+    stock.Price = tick.Price;
+    await InvokeAsync(StateHasChanged);
+  }
+
+}

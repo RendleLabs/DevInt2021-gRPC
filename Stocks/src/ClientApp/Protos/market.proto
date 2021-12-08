@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "Market.Protos";
+
+package market;
+
+service MarketService {
+  rpc StockWatch(stream AddStockWatch) returns (stream StockPriceUpdate);
+}
+
+message AddStockWatch {
+  string code = 1;
+}
+
+message StockPriceUpdate {
+  string code = 1;
+  float price = 2;
+}

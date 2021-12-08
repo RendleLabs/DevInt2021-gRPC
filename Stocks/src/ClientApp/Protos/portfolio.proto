@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option csharp_namespace = "Portfolios.Protos";
+
+package stocks;
+
+service PortfolioService {
+  rpc GetPortfolio(GetPortfolioRequest) returns (GetPortfolioResponse);
+}
+
+message Portfolio {
+  string id = 1;
+  repeated Stock stocks = 2;
+}
+
+message Stock {
+  string code = 1;
+  string name = 2;
+  int32 quantity_held = 3;
+}
+
+message GetPortfolioRequest {
+  string id = 1;
+}
+
+message GetPortfolioResponse {
+  Portfolio portfolio = 1;
+}
+
