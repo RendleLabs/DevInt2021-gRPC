@@ -1,7 +1,9 @@
 syntax = "proto3";
 
+// Sets the C# namespace for the generated code
 option csharp_namespace = "Portfolios.Protos";
 
+// Package name combines with service and message names to uniquely identify them
 package stocks;
 
 service PortfolioService {
@@ -10,15 +12,20 @@ service PortfolioService {
 
 message Portfolio {
   string id = 1;
+
+  // repeated creates a List property
   repeated Stock stocks = 2;
 }
 
 message Stock {
   string code = 1;
   string name = 2;
+
+  // Use snake_case so the Protobuf compiler can generate good names for all platforms
   int32 quantity_held = 3;
 }
 
+// Explicit request and response objects make versioning easier
 message GetPortfolioRequest {
   string id = 1;
 }

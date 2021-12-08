@@ -15,6 +15,13 @@ internal partial class PortfolioServiceImpl : PortfolioService.PortfolioServiceB
         _logger = logger;
     }
     
+    /// <summary>
+    /// Gets a Portfolio
+    /// </summary>
+    /// <param name="request">The Protobuf request message</param>
+    /// <param name="context">Context for the call, including the underlying HttpContext</param>
+    /// <returns>The Protobuf response message</returns>
+    /// <exception cref="RpcException">Throws RpcException to report errors</exception>
     public override async Task<GetPortfolioResponse> GetPortfolio(GetPortfolioRequest request, ServerCallContext context)
     {
         if (!Guid.TryParse(request.Id, out var id))

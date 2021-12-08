@@ -5,6 +5,7 @@ option csharp_namespace = "Market.Protos";
 package market;
 
 service MarketService {
+  // Bidirectional streaming
   rpc StockWatch(stream AddStockWatch) returns (stream StockPriceUpdate);
 }
 
